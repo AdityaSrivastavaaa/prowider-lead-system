@@ -260,5 +260,4 @@ Omit `providerId` to reset all 8 providers simultaneously.
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL connection string (Neon pooled URL recommended) | Yes |
 | `WEBHOOK_SECRET` | Validates `x-webhook-secret` header on webhook endpoint | Yes |
-| `NEXT_PUBLIC_WEBHOOK_SECRET` | Exposes secret to browser for test-tools panel | Yes |#   p r o w i d e r - l e a d - s y s t e m  
- 
+| `NEXT_PUBLIC_WEBHOOK_SECRET` | Exposes secret to browser for test-tools panel | Yes |#
