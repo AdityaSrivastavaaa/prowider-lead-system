@@ -5,9 +5,8 @@
 ---
 
 ## Live Demo
+🔗 **[https://prowider-lead-system-beta.vercel.app](https://prowider-lead-system-beta.vercel.app)**
 
-🔗 **[https://prowider-lead-distribution.vercel.app](https://prowider-lead-distribution.vercel.app)**
-> *(Replace with your actual Vercel URL before submitting)*
 
 **Key pages to test:**
 - [`/request-service`](https://prowider-lead-distribution.vercel.app/request-service) — Customer lead form
