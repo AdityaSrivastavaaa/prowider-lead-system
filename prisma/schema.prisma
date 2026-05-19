@@ -1,0 +1,82 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  leads       Lead[]
+
+  @@map("services")
+}
+
+model Provider {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  email          String           @unique
+  monthlyQuota   Int              @default(10)
+  currentCount   Int              @default(0)
+  allocationIndex Int             @default(0) // persisted round-robin pointer per service pool
+  leadAssignments LeadAssignment[]
+  webhookEvents  WebhookEvent[]
+
+  @@map("providers")
+}
+
+model Lead {
+  id          Int              @id @default(autoincrement())
+  name        String
+  phone       String
+  city        String
+  description String
+  serviceId   Int
+  service     Service          @relation(fields: [serviceId], references: [id])
+  assignments LeadAssignment[]
+  createdAt   DateTime         @default(now())
+
+  // Enforce: same phone + same service = duplicate
+  @@unique([phone, serviceId])
+  @@map("leads")
+}
+
+model LeadAssignment {
+  id         Int      @id @default(autoincrement())
+  leadId     Int
+  providerId Int
+  assignedAt DateTime @default(now())
+  lead       Lead     @relation(fields: [leadId], references: [id])
+  provider   Provider @relation(fields: [providerId], references: [id])
+
+  @@unique([leadId, providerId])
+  @@map("lead_assignments")
+}
+
+// Persisted round-robin allocation state per service
+// Tracks which provider in the fair pool should be next
+model AllocationState {
+  id        Int    @id @default(autoincrement())
+  serviceId Int
+  poolIndex Int    @default(0) // current index in the fair pool array
+
+  @@unique([serviceId])
+  @@map("allocation_states")
+}
+
+// Idempotency store for webhook events
+model WebhookEvent {
+  id          Int      @id @default(autoincrement())
+  idempotencyKey String @unique
+  eventType   String
+  providerId  Int?
+  processedAt DateTime @default(now())
+  provider    Provider? @relation(fields: [providerId], references: [id])
+
+  @@map("webhook_events")
+}
